@@ -24,9 +24,9 @@ type Step = "service" | "type" | "form" | "ticket";
 
 interface TicketResult {
   formattedNumber: string;
-  estimatedWait: number;
   service: Service;
   visitorName: string;
+  queueType: string;
 }
 
 export function KioskForm({ services, locale }: Props) {
@@ -66,7 +66,7 @@ export function KioskForm({ services, locale }: Props) {
       });
       const data = await res.json();
       if (res.ok) {
-        setTicket({ ...data, service: selectedService, visitorName: form.visitorName });
+        setTicket({ ...data, service: selectedService, visitorName: form.visitorName, queueType });
         setStep("ticket");
       }
     } finally {
@@ -80,8 +80,8 @@ export function KioskForm({ services, locale }: Props) {
       officeName: "BPOM Lubuklinggau",
       formattedNumber: ticket.formattedNumber,
       serviceName: locale === "en" ? ticket.service.nameEn : ticket.service.name,
+      queueType: ticket.queueType,
       visitorName: ticket.visitorName,
-      estimatedWait: ticket.estimatedWait,
       createdAt: new Date(),
     };
     const printed = await printTicketSerial(ticketData);
@@ -109,7 +109,7 @@ export function KioskForm({ services, locale }: Props) {
             {locale === "en" ? ticket.service.nameEn : ticket.service.name}
           </p>
           <p className="text-sm text-gray-500">
-            {tr.common.estimatedWait}: ~{ticket.estimatedWait} {tr.common.minutes}
+            {queueType === "disability" ? "Disabilitas / Prioritas" : "Antrian Umum"}
           </p>
           {queueType === "disability" && (
             <Badge className="bg-purple-600">{tr.common.disability}</Badge>
