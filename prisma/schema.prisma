@@ -16,8 +16,8 @@ model Queue {
   counter     Counter?  @relation(fields: [counterId], references: [id])
   status      String    @default("waiting") // "waiting" | "called" | "serving" | "done" | "skipped"
   visitorName String
-  nik         String
-  phone       String
+  nik         String?
+  phone       String?
   serviceId   Int
   service     Service   @relation(fields: [serviceId], references: [id])
   date        String

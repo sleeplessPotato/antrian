@@ -12,7 +12,7 @@ export interface TicketData {
 }
 
 function queueTypeLabel(t: string) {
-  return t === "disability" ? "Disabilitas / Prioritas" : "Umum";
+  return t === "disability" ? "Disabilitas/Prioritas" : "Umum";
 }
 
 // ESC/POS: thermal printer via Web Serial API
@@ -23,7 +23,7 @@ export async function printTicketSerial(data: TicketData): Promise<boolean> {
     const serial = (navigator as any).serial;
     const granted: any[] = await serial.getPorts();
     const port = granted.length > 0 ? granted[0] : await serial.requestPort();
-    await port.open({ baudRate: 9600 });
+    if (!port.readable) await port.open({ baudRate: 9600 });
 
     const enc  = new TextEncoder();
     const writer = port.writable.getWriter();
@@ -63,7 +63,7 @@ export async function printTicketSerial(data: TicketData): Promise<boolean> {
 
     await writer.write(enc.encode(L.join("")));
     writer.releaseLock();
-    await port.close();
+    try { await port.close(); } catch { /* port may already be closing */ }
     return true;
   } catch (err) {
     console.error("[printTicketSerial]", err);

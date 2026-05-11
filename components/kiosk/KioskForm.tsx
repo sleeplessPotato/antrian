@@ -42,9 +42,7 @@ export function KioskForm({ services, locale }: Props) {
   const validate = () => {
     const e: Record<string, string> = {};
     if (!form.visitorName.trim()) e.visitorName = tr.kiosk.validation.nameRequired;
-    if (!form.nik.trim()) e.nik = tr.kiosk.validation.nikRequired;
-    else if (form.nik.replace(/\D/g, "").length !== 16) e.nik = tr.kiosk.validation.nikLength;
-    if (!form.phone.trim()) e.phone = tr.kiosk.validation.phoneRequired;
+    if (form.nik.trim() && form.nik.replace(/\D/g, "").length !== 16) e.nik = tr.kiosk.validation.nikLength;
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -207,6 +205,7 @@ export function KioskForm({ services, locale }: Props) {
           <Input
             placeholder={tr.kiosk.namePlaceholder}
             value={form.visitorName}
+            maxLength={50}
             onChange={(e) => setForm((f) => ({ ...f, visitorName: e.target.value }))}
             className={errors.visitorName ? "border-red-500" : ""}
           />
