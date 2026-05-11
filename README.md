@@ -119,7 +119,7 @@ NEXT_PUBLIC_APP_NAME="Antrian BPOM Lubuklinggau"
 | `/` | Kiosk — ambil nomor antrian + cetak tiket | Pengunjung |
 | `/display` | Papan antrian realtime + suara + slideshow iklan | TV/Monitor publik |
 | `/dashboard` | Panel petugas — panggil & layani antrian | Petugas |
-| `/dashboard` (tab Admin) | Kelola petugas, layanan, loket, pengumuman, iklan, pengaturan | Admin |
+| `/dashboard` (tab Admin) | Kelola petugas, layanan, loket, pengumuman, iklan, backup, pengaturan | Admin |
 | `/kiosk` | Alternatif kiosk tablet | Pengunjung |
 
 ---
@@ -168,6 +168,23 @@ Tiket dicetak otomatis setelah pengunjung mengisi data. Didukung dua mode:
 
 ---
 
+## Backup & Restore
+
+Database dicadangkan secara otomatis dan dapat dipulihkan melalui panel admin (tab **Admin → Backup**).
+
+| Fitur | Keterangan |
+|---|---|
+| **Backup manual** | Download file `.db` langsung dari browser |
+| **Backup otomatis** | Berjalan 30 detik setelah server nyala, lalu setiap 24 jam |
+| **Retensi** | Maksimal 7 file tersimpan di `backups/` — yang terlama dihapus otomatis |
+| **Restore dari backup tersimpan** | Pilih file dari daftar → konfirmasi → restore langsung tanpa restart server |
+| **Restore dari file eksternal** | Upload file `.db` dari perangkat lain |
+| **Safety backup** | Backup kondisi saat ini dibuat otomatis sebelum setiap restore |
+
+> Folder `backups/` tidak ikut ter-commit ke git (sudah ada di `.gitignore`). Salin folder tersebut secara manual jika ingin memindahkan backup ke tempat lain.
+
+---
+
 ## Fitur Suara (Display Board)
 
 - Pengumuman bilingual otomatis: **Indonesia lalu Inggris**
@@ -194,9 +211,11 @@ Tiket dicetak otomatis setelah pengunjung mengisi data. Didukung dua mode:
 │   ├── display/      # Komponen papan antrian
 │   ├── kiosk/        # Komponen form kiosk
 │   └── ui/           # Komponen shadcn/ui
-├── lib/              # Utilitas (db, auth, socket, voice, printer, queue-utils)
+├── lib/              # Utilitas (db, auth, socket, voice, printer, backup, queue-utils)
 ├── public/
-│   └── ads/          # File iklan yang diupload (jpg/png/pdf)
+│   └── ads/          # File iklan yang diupload (jpg/png/pdf) — gitignored
+├── backups/          # File backup database otomatis (.db) — gitignored
+├── scripts/          # Script utilitas (test-backup.ts, test-restore.ts)
 ├── prisma/
 │   ├── schema.prisma # Skema database
 │   ├── seed.ts       # Script seed
