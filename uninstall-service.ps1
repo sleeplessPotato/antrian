@@ -36,7 +36,7 @@ Start-Sleep -Seconds 2
 & $nssmExe remove $serviceName confirm
 
 Write-Host ""
-Write-Host "✓ Service '$serviceName' berhasil dihapus." -ForegroundColor Green
+Write-Host "[OK] Service '$serviceName' berhasil dihapus." -ForegroundColor Green
 Write-Host "  Aplikasi tidak akan lagi berjalan otomatis saat PC menyala." -ForegroundColor Gray
 Write-Host ""
 pause
