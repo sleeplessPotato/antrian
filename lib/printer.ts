@@ -35,7 +35,6 @@ export async function printTicketSerial(data: TicketData): Promise<boolean> {
       "\x1B\x21\x08",                // Bold normal
       data.officeName + "\n",
       "\x1B\x21\x00",                // Normal
-      "Layanan Pengawasan Obat dan Makanan\n",
       "--------------------------------\n",
       "NOMOR ANTRIAN\n",
       "\x1B\x21\x38",                // Double size bold
@@ -103,7 +102,6 @@ export function printTicketWindow(data: TicketData) {
 </head>
 <body>
   <p class="header">${data.officeName}</p>
-  <p class="sub">Layanan Pengawasan Obat dan Makanan</p>
   <div class="divider"></div>
   <p class="label">NOMOR ANTRIAN</p>
   <p class="number">${data.formattedNumber}</p>
