@@ -52,7 +52,7 @@ export async function printTicketSerial(data: TicketData): Promise<boolean> {
       "Please wait for your call\n",
       "\n",
       "--------------------------------\n",
-      "\x1B\x21\x01",                // Smaller font
+      "\x1B\x25\x01",                // Smaller font
       "BPOM di Lubuklinggau tidak\n",
       "menerima gratifikasi dalam\n",
       "bentuk apapun\n",
