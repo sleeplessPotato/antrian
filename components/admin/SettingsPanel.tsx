@@ -58,7 +58,7 @@ export function SettingsPanel() {
         </div>
         <div>
           <Label>Jenis Suara Pengumuman</Label>
-          <Select value={form.voice_type} onValueChange={(v) => setForm({ ...form, voice_type: v })}>
+          <Select value={form.voice_type} onValueChange={(v) => v && setForm({ ...form, voice_type: v })}>
             <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="tts">Text-to-Speech</SelectItem>
@@ -69,7 +69,7 @@ export function SettingsPanel() {
         </div>
         <div>
           <Label>Mode Antrian</Label>
-          <Select value={form.queue_mode} onValueChange={(v) => setForm({ ...form, queue_mode: v })}>
+          <Select value={form.queue_mode} onValueChange={(v) => v && setForm({ ...form, queue_mode: v })}>
             <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="single">Single (satu loket per antrian)</SelectItem>
