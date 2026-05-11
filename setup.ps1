@@ -35,17 +35,16 @@ if ($isAdmin) {
     Write-Host "Atau jalankan manual: netsh interface portproxy add v4tov4 listenport=80 listenaddress=0.0.0.0 connectport=3000 connectaddress=127.0.0.1" -ForegroundColor Gray
 }
 
-Write-Host "`nSetup complete! Jalankan: npm start" -ForegroundColor Green
+Write-Host "`nSetup complete!" -ForegroundColor Green
 Write-Host ""
-Write-Host "Akses aplikasi:" -ForegroundColor Cyan
-if ($isAdmin) {
-    $hostname = $env:COMPUTERNAME.ToLower()
-    Write-Host "  http://$hostname/          <- Kiosk" -ForegroundColor White
-    Write-Host "  http://$hostname/display   <- Display TV" -ForegroundColor White
-    Write-Host "  http://$hostname/dashboard <- Petugas" -ForegroundColor White
-} else {
-    Write-Host "  http://localhost:3000" -ForegroundColor White
-}
+Write-Host "Langkah selanjutnya:" -ForegroundColor Cyan
+Write-Host "  1. npm run build" -ForegroundColor White
+Write-Host "  2. .\install-service.ps1  (sebagai Administrator)" -ForegroundColor White
+Write-Host ""
+Write-Host "Akses aplikasi (ganti IP sesuai PC server):" -ForegroundColor Cyan
+Write-Host "  http://<IP-SERVER>/          <- Kiosk" -ForegroundColor White
+Write-Host "  http://<IP-SERVER>/display   <- Display TV" -ForegroundColor White
+Write-Host "  http://<IP-SERVER>/dashboard <- Petugas" -ForegroundColor White
 Write-Host ""
 Write-Host "Admin: admin / admin123" -ForegroundColor Cyan
 Write-Host "Staff: petugas1 / petugas123" -ForegroundColor Cyan

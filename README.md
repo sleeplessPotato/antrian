@@ -62,15 +62,7 @@ Script ini otomatis menjalankan:
 
 > **Windows:** klik kanan PowerShell → *Run as Administrator*, lalu jalankan `.\setup.ps1`
 
-### 3. Rename PC server (sekali saja)
-
-Agar petugas bisa akses tanpa hafal IP:
-
-1. Klik kanan **This PC → Properties → Rename this PC**
-2. Ganti nama menjadi `antrian`
-3. Restart PC
-
-### 4. Build aplikasi
+### 3. Build aplikasi
 
 ```bash
 npm run build
