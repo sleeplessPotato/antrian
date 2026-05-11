@@ -30,7 +30,7 @@ interface QueueItem {
 function reprintTicket(q: QueueItem) {
   const data = {
     officeName: "BPOM Lubuklinggau",
-    formattedNumber: q.formattedNumber,
+    formattedNumber: formatQueueNumber(q.prefix, q.number),
     serviceName: q.service.name,
     queueType: q.queueType,
     visitorName: q.visitorName,
