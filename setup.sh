@@ -31,11 +31,13 @@ else
     echo "  sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 3000"
 fi
 
-echo -e "\n\033[0;32mSetup complete! Jalankan: npm start\033[0m"
-HOSTNAME_VAL=$(hostname)
-echo -e "\nAkses aplikasi:"
-echo -e "  http://$HOSTNAME_VAL/          <- Kiosk"
-echo -e "  http://$HOSTNAME_VAL/display   <- Display TV"
-echo -e "  http://$HOSTNAME_VAL/dashboard <- Petugas"
+echo -e "\n\033[0;32mSetup complete!\033[0m"
+echo -e "\nLangkah selanjutnya:"
+echo -e "  1. npm run build"
+echo -e "  2. npm start"
+echo -e "\nAkses aplikasi (ganti IP sesuai server):"
+echo -e "  http://<IP-SERVER>/          <- Kiosk"
+echo -e "  http://<IP-SERVER>/display   <- Display TV"
+echo -e "  http://<IP-SERVER>/dashboard <- Petugas"
 echo -e "\n\033[0;36mAdmin: admin / admin123\033[0m"
 echo -e "\033[0;36mStaff: petugas1 / petugas123\033[0m"

@@ -249,7 +249,9 @@ export default function DisplayPage() {
       </header>
 
       {/* Running text */}
-      <RunningText announcements={announcements} locale={locale} />
+      <div className="mb-2">
+        <RunningText announcements={announcements} locale={locale} />
+      </div>
 
       {/* Main layout */}
       <main className="flex-1 grid grid-cols-3 gap-5 px-6 pb-4 min-h-0">
