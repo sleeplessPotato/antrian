@@ -283,40 +283,72 @@ export default function DisplayPage() {
             </div>
           )}
 
-          {/* Daftar Menunggu — flex-1 mengisi sisa ruang */}
-          <div className="flex-1 min-h-0 flex flex-col">
-            <h2 className="text-xs font-bold text-blue-200 uppercase tracking-widest mb-2 shrink-0">
-              ⏳ Daftar Menunggu
-              {data.waiting.length > 0 && (
-                <span className="ml-2 text-blue-300 normal-case font-normal">({data.waiting.length})</span>
-              )}
-            </h2>
-            <div className="flex-1 min-h-0 overflow-hidden bg-white/5 rounded-2xl p-3">
-              {data.waiting.length > 0 ? (
-                <div className="grid grid-cols-2 gap-2 h-full content-start overflow-y-auto">
-                  {data.waiting.slice(0, 12).map((q, i) => (
-                    <div
-                      key={q.id}
-                      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 ${
-                        i === 0 ? "bg-blue-500/30 border border-blue-400/40" : "bg-white/5"
-                      }`}
-                    >
-                      <span className="font-black text-white text-lg w-16 shrink-0">{q.formattedNumber}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-blue-100 text-xs truncate">{q.service?.name}</p>
-                        {q.queueType === "disability" && (
-                          <span className="text-purple-300 text-xs">♿ Prioritas</span>
-                        )}
+          {/* Daftar Menunggu + Terakhir Dilayani — side by side, flex-1 */}
+          <div className="flex-1 min-h-0 grid grid-cols-2 gap-4">
+
+            {/* Daftar Menunggu */}
+            <div className="flex flex-col min-h-0">
+              <h2 className="text-xs font-bold text-blue-200 uppercase tracking-widest mb-2 shrink-0">
+                ⏳ Menunggu
+                {data.waiting.length > 0 && (
+                  <span className="ml-1.5 text-blue-300 normal-case font-normal">({data.waiting.length})</span>
+                )}
+              </h2>
+              <div className="flex-1 min-h-0 overflow-hidden bg-white/5 rounded-2xl p-3">
+                {data.waiting.length > 0 ? (
+                  <div className="space-y-2 h-full overflow-y-auto">
+                    {data.waiting.slice(0, 8).map((q, i) => (
+                      <div
+                        key={q.id}
+                        className={`flex items-center gap-3 rounded-xl px-3 py-2.5 ${
+                          i === 0 ? "bg-blue-500/30 border border-blue-400/40" : "bg-white/5"
+                        }`}
+                      >
+                        <span className="font-black text-white text-lg w-14 shrink-0">{q.formattedNumber}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-blue-100 text-xs truncate">{q.service?.name}</p>
+                          {q.queueType === "disability" && (
+                            <span className="text-purple-300 text-xs">♿</span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="h-full flex items-center justify-center">
-                  <p className="text-white/20 text-sm">Tidak ada antrian menunggu</p>
-                </div>
-              )}
+                    ))}
+                  </div>
+                ) : (
+                  <div className="h-full flex items-center justify-center">
+                    <p className="text-white/20 text-sm">—</p>
+                  </div>
+                )}
+              </div>
             </div>
+
+            {/* Terakhir Dilayani */}
+            <div className="flex flex-col min-h-0">
+              <h2 className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 shrink-0">
+                ✓ Terakhir Dilayani
+              </h2>
+              <div className="flex-1 min-h-0 overflow-hidden bg-white/5 rounded-2xl p-3">
+                {data.recentDone.length > 0 ? (
+                  <div className="space-y-2 h-full overflow-y-auto">
+                    {data.recentDone.slice(0, 8).map((q) => (
+                      <div key={q.id} className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5">
+                        <span className="font-black text-white/50 text-lg w-14 shrink-0">{q.formattedNumber}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white/40 text-xs truncate">{q.service?.name}</p>
+                          <p className="text-white/30 text-xs truncate">{q.counter?.name ?? "—"}</p>
+                        </div>
+                        <span className="text-green-400/60 text-xs shrink-0">✓</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="h-full flex items-center justify-center">
+                    <p className="text-white/20 text-sm">—</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
           </div>
         </div>
 
