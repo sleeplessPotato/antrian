@@ -19,7 +19,10 @@ function queueTypeLabel(t: string) {
 export async function printTicketSerial(data: TicketData): Promise<boolean> {
   if (!("serial" in navigator)) return false;
   try {
-    const port = await (navigator as any).serial.requestPort();
+    // Gunakan port yang sudah diizinkan sebelumnya — picker hanya muncul pertama kali
+    const serial = (navigator as any).serial;
+    const granted: any[] = await serial.getPorts();
+    const port = granted.length > 0 ? granted[0] : await serial.requestPort();
     await port.open({ baudRate: 9600 });
 
     const enc  = new TextEncoder();
