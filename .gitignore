@@ -44,3 +44,5 @@ next-env.d.ts
 /lib/generated/prisma
 prisma/*.db
 prisma/*.db-journal
+/public/ads/
+/backups/

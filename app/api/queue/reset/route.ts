@@ -6,7 +6,7 @@ import { getTodayDate } from "@/lib/queue-utils";
 
 export async function POST() {
   const session = await getSession();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session || session.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const today = getTodayDate();
 

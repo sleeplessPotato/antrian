@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { visitorName, nik, phone, serviceId, queueType = "single", counterId } = body;
 
-  if (!visitorName || !nik || !phone || !serviceId) {
+  if (!visitorName || !serviceId) {
     return NextResponse.json({ error: "Data tidak lengkap" }, { status: 400 });
   }
 

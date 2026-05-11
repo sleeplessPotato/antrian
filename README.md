@@ -1,6 +1,6 @@
 # Antrian BPOM Lubuklinggau
 
-Sistem antrian digital berbasis web untuk BPOM Lubuklinggau. Fitur: kiosk cetak nomor, display board realtime, dashboard petugas, pengumuman suara bilingual (ID + EN).
+Sistem antrian digital berbasis web untuk BPOM Lubuklinggau. Fitur: kiosk cetak nomor antrian, cetak tiket ke printer thermal (Bluetooth/Serial), display board realtime dengan slideshow iklan, dashboard petugas, panel admin dengan manajemen layanan/loket/iklan, dan pengumuman suara bilingual (ID + EN).
 
 ---
 
@@ -37,68 +37,78 @@ Sistem antrian digital berbasis web untuk BPOM Lubuklinggau. Fitur: kiosk cetak 
 ### 1. Clone repository
 
 ```bash
-git clone <url-repo> antrian-bpom
+git clone https://github.com/sleeplessPotato/antrian antrian-bpom
 cd antrian-bpom
 ```
 
-### 2. Install dependensi
+### 2. Jalankan setup script (satu perintah)
+
+**Windows (PowerShell):**
+```powershell
+.\setup.ps1
+```
+
+**Linux / Mac:**
+```bash
+chmod +x setup.sh && ./setup.sh
+```
+
+Script ini otomatis menjalankan:
+1. `npm install` — install semua dependensi
+2. Buat `.env` dari `.env.example`
+3. `npm run db:migrate` — buat database & terapkan skema
+4. `npm run db:seed` — isi data awal (layanan, loket, akun)
+5. Port forwarding 80 → 3000 (butuh Administrator/sudo)
+
+> **Windows:** klik kanan PowerShell → *Run as Administrator*, lalu jalankan `.\setup.ps1`
+
+### 3. Rename PC server (sekali saja)
+
+Agar petugas bisa akses tanpa hafal IP:
+
+1. Klik kanan **This PC → Properties → Rename this PC**
+2. Ganti nama menjadi `antrian`
+3. Restart PC
+
+### 4. Jalankan server
+
+```bash
+npm run build
+npm start
+```
+
+Akses dari semua perangkat di jaringan yang sama:
+
+| URL | Halaman |
+|---|---|
+| `http://antrian/` | Kiosk |
+| `http://antrian/display` | Display TV |
+| `http://antrian/dashboard` | Petugas |
+
+---
+
+### Setup manual (opsional)
+
+Jika ingin menjalankan langkah per langkah:
 
 ```bash
 npm install
-```
-
-### 3. Buat file `.env`
-
-Salin dari contoh lalu sesuaikan jika perlu:
-
-```bash
-cp .env.example .env
+cp .env.example .env          # Linux/Mac
+# copy .env.example .env      # Windows CMD
+npm run db:migrate
+npm run db:seed
+npm run dev
 ```
 
 Isi default `.env`:
 
 ```env
 DATABASE_URL="file:./prisma/dev.db"
-JWT_SECRET="antrian-bpom-lubuklinggau-secret-2024"
+JWT_SECRET="ganti-dengan-string-acak-yang-kuat"
 NEXT_PUBLIC_APP_NAME="Antrian BPOM Lubuklinggau"
 ```
 
 > Ganti `JWT_SECRET` dengan string acak yang kuat sebelum deploy ke produksi.
-
-### 4. Jalankan migrasi database
-
-```bash
-npm run db:migrate
-```
-
-Perintah ini membuat file `prisma/dev.db` dan menerapkan semua skema tabel.
-
-### 5. Seed data awal
-
-```bash
-npm run db:seed
-```
-
-Akan membuat:
-- 5 layanan (Konsultasi Produk, Pengambilan Dokumen, dll.)
-- 3 loket (Loket 1–3)
-- Akun admin dan petugas
-- Pengumuman default
-
-### 6. Jalankan server
-
-**Development:**
-```bash
-npm run dev
-```
-
-**Production:**
-```bash
-npm run build
-npm start
-```
-
-Server berjalan di `http://localhost:3000`
 
 ---
 
@@ -106,9 +116,10 @@ Server berjalan di `http://localhost:3000`
 
 | URL | Fungsi | Pengguna |
 |---|---|---|
-| `/` | Kiosk — ambil nomor antrian | Pengunjung |
-| `/display` | Papan antrian realtime + suara | TV/Monitor publik |
-| `/dashboard` | Panel petugas — panggil & layani | Petugas/Admin |
+| `/` | Kiosk — ambil nomor antrian + cetak tiket | Pengunjung |
+| `/display` | Papan antrian realtime + suara + slideshow iklan | TV/Monitor publik |
+| `/dashboard` | Panel petugas — panggil & layani antrian | Petugas |
+| `/dashboard` (tab Admin) | Kelola petugas, layanan, loket, pengumuman, iklan, pengaturan | Admin |
 | `/kiosk` | Alternatif kiosk tablet | Pengunjung |
 
 ---
@@ -138,6 +149,25 @@ npm run clean        # Hapus folder .next
 
 ---
 
+## Printer Thermal
+
+Tiket dicetak otomatis setelah pengunjung mengisi data. Didukung dua mode:
+
+| Mode | Cara Kerja |
+|---|---|
+| **Serial (ESC/POS)** | Via [Web Serial API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API) — koneksi Bluetooth atau USB ke printer thermal |
+| **Browser print** | Fallback otomatis jika Serial tidak tersedia — buka jendela print browser |
+
+**Setup printer Bluetooth (sekali saja):**
+1. Pasangkan printer ke PC via Bluetooth (Settings → Bluetooth → Add device)
+2. Buka halaman kiosk di browser Chrome/Edge
+3. Pertama kali print → browser meminta izin memilih port → pilih printer
+4. Print selanjutnya langsung tanpa picker
+
+> Web Serial API hanya tersedia di Chrome dan Edge. Firefox tidak didukung.
+
+---
+
 ## Fitur Suara (Display Board)
 
 - Pengumuman bilingual otomatis: **Indonesia lalu Inggris**
@@ -154,12 +184,19 @@ npm run clean        # Hapus folder .next
 .
 ├── app/
 │   ├── api/          # Route API (Next.js App Router)
-│   ├── dashboard/    # Halaman dashboard petugas
-│   ├── display/      # Papan antrian publik
-│   ├── kiosk/        # Halaman kiosk
+│   ├── dashboard/    # Halaman dashboard petugas & admin
+│   ├── display/      # Papan antrian publik + slideshow
+│   ├── kiosk/        # Halaman kiosk tablet
 │   └── page.tsx      # Kiosk utama
-├── components/       # Komponen React (ui/, dashboard/, display/)
-├── lib/              # Utilitas (db, auth, socket, voice, queue-utils)
+├── components/
+│   ├── admin/        # Panel admin (petugas, layanan, loket, iklan, dll)
+│   ├── dashboard/    # Komponen dashboard petugas
+│   ├── display/      # Komponen papan antrian
+│   ├── kiosk/        # Komponen form kiosk
+│   └── ui/           # Komponen shadcn/ui
+├── lib/              # Utilitas (db, auth, socket, voice, printer, queue-utils)
+├── public/
+│   └── ads/          # File iklan yang diupload (jpg/png/pdf)
 ├── prisma/
 │   ├── schema.prisma # Skema database
 │   ├── seed.ts       # Script seed

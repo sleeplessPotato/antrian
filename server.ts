@@ -2,6 +2,7 @@ import { createServer } from "http";
 import { parse } from "url";
 import next from "next";
 import { Server as SocketIOServer } from "socket.io";
+import { runAutoBackup } from "./lib/backup";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = process.env.HOSTNAME || "0.0.0.0";
@@ -52,5 +53,12 @@ app.prepare().then(() => {
   httpServer.listen(port, hostname, () => {
     console.log(`> Ready on http://${hostname}:${port}`);
     console.log(`> Mode: ${dev ? "development" : "production"}`);
+
+    // Auto-backup: run 30s after startup, then every 24h
+    const BACKUP_INTERVAL = 24 * 60 * 60 * 1000;
+    setTimeout(() => {
+      runAutoBackup();
+      setInterval(runAutoBackup, BACKUP_INTERVAL);
+    }, 30_000);
   });
 });

@@ -24,9 +24,9 @@ type Step = "service" | "type" | "form" | "ticket";
 
 interface TicketResult {
   formattedNumber: string;
-  estimatedWait: number;
   service: Service;
   visitorName: string;
+  queueType: string;
 }
 
 export function KioskForm({ services, locale }: Props) {
@@ -42,9 +42,7 @@ export function KioskForm({ services, locale }: Props) {
   const validate = () => {
     const e: Record<string, string> = {};
     if (!form.visitorName.trim()) e.visitorName = tr.kiosk.validation.nameRequired;
-    if (!form.nik.trim()) e.nik = tr.kiosk.validation.nikRequired;
-    else if (form.nik.replace(/\D/g, "").length !== 16) e.nik = tr.kiosk.validation.nikLength;
-    if (!form.phone.trim()) e.phone = tr.kiosk.validation.phoneRequired;
+    if (form.nik.trim() && form.nik.replace(/\D/g, "").length !== 16) e.nik = tr.kiosk.validation.nikLength;
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -66,8 +64,20 @@ export function KioskForm({ services, locale }: Props) {
       });
       const data = await res.json();
       if (res.ok) {
-        setTicket({ ...data, service: selectedService, visitorName: form.visitorName });
+        const t = { ...data, service: selectedService, visitorName: form.visitorName, queueType };
+        setTicket(t);
         setStep("ticket");
+        // Auto-print langsung setelah tiket dibuat
+        const ticketData = {
+          officeName: "BPOM Lubuklinggau",
+          formattedNumber: t.formattedNumber,
+          serviceName: locale === "en" ? t.service.nameEn : t.service.name,
+          queueType: t.queueType,
+          visitorName: t.visitorName,
+          createdAt: new Date(),
+        };
+        const printed = await printTicketSerial(ticketData);
+        if (!printed) printTicketWindow(ticketData);
       }
     } finally {
       setLoading(false);
@@ -80,8 +90,8 @@ export function KioskForm({ services, locale }: Props) {
       officeName: "BPOM Lubuklinggau",
       formattedNumber: ticket.formattedNumber,
       serviceName: locale === "en" ? ticket.service.nameEn : ticket.service.name,
+      queueType: ticket.queueType,
       visitorName: ticket.visitorName,
-      estimatedWait: ticket.estimatedWait,
       createdAt: new Date(),
     };
     const printed = await printTicketSerial(ticketData);
@@ -109,7 +119,7 @@ export function KioskForm({ services, locale }: Props) {
             {locale === "en" ? ticket.service.nameEn : ticket.service.name}
           </p>
           <p className="text-sm text-gray-500">
-            {tr.common.estimatedWait}: ~{ticket.estimatedWait} {tr.common.minutes}
+            {queueType === "disability" ? "Disabilitas / Prioritas" : "Antrian Umum"}
           </p>
           {queueType === "disability" && (
             <Badge className="bg-purple-600">{tr.common.disability}</Badge>
@@ -195,6 +205,7 @@ export function KioskForm({ services, locale }: Props) {
           <Input
             placeholder={tr.kiosk.namePlaceholder}
             value={form.visitorName}
+            maxLength={50}
             onChange={(e) => setForm((f) => ({ ...f, visitorName: e.target.value }))}
             className={errors.visitorName ? "border-red-500" : ""}
           />

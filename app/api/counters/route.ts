@@ -11,6 +11,19 @@ export async function GET() {
   return NextResponse.json(counters);
 }
 
+export async function POST(req: NextRequest) {
+  const session = await getSession();
+  if (!session || session.role !== "admin") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const { name, code } = await req.json();
+  const counter = await db.counter.create({
+    data: { name, code },
+    include: { staff: { select: { id: true, name: true } } },
+  });
+  return NextResponse.json(counter, { status: 201 });
+}
+
 export async function PATCH(req: NextRequest) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
