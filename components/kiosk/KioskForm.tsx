@@ -66,8 +66,20 @@ export function KioskForm({ services, locale }: Props) {
       });
       const data = await res.json();
       if (res.ok) {
-        setTicket({ ...data, service: selectedService, visitorName: form.visitorName, queueType });
+        const t = { ...data, service: selectedService, visitorName: form.visitorName, queueType };
+        setTicket(t);
         setStep("ticket");
+        // Auto-print langsung setelah tiket dibuat
+        const ticketData = {
+          officeName: "BPOM Lubuklinggau",
+          formattedNumber: t.formattedNumber,
+          serviceName: locale === "en" ? t.service.nameEn : t.service.name,
+          queueType: t.queueType,
+          visitorName: t.visitorName,
+          createdAt: new Date(),
+        };
+        const printed = await printTicketSerial(ticketData);
+        if (!printed) printTicketWindow(ticketData);
       }
     } finally {
       setLoading(false);

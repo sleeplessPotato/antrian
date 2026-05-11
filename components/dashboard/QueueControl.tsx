@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getSocket } from "@/lib/socket-client";
 import { formatQueueNumber } from "@/lib/queue-utils";
+import { printTicketSerial, printTicketWindow } from "@/lib/printer";
 
 interface Counter {
   id: number;
@@ -24,6 +25,18 @@ interface QueueItem {
   visitorName: string;
   service: { name: string };
   counter?: { name: string } | null;
+}
+
+function reprintTicket(q: QueueItem) {
+  const data = {
+    officeName: "BPOM Lubuklinggau",
+    formattedNumber: q.formattedNumber,
+    serviceName: q.service.name,
+    queueType: q.queueType,
+    visitorName: q.visitorName,
+    createdAt: new Date(),
+  };
+  printTicketSerial(data).then((ok) => { if (!ok) printTicketWindow(data); });
 }
 
 interface SkipFeedback {
@@ -265,6 +278,13 @@ export function QueueControl({ counter }: Props) {
                       {q.callCount}x
                     </span>
                   )}
+                  <button
+                    onClick={() => reprintTicket(q)}
+                    className="text-gray-400 hover:text-blue-600 transition-colors ml-1"
+                    title="Cetak ulang tiket"
+                  >
+                    🖨️
+                  </button>
                 </div>
               </div>
             ))}
