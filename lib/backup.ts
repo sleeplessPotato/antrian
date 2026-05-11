@@ -1,5 +1,5 @@
 import path from "path";
-import { mkdir, readdir, unlink, stat } from "fs/promises";
+import { mkdir, readdir, unlink, stat, copyFile, open } from "fs/promises";
 
 export const BACKUP_DIR = path.join(process.cwd(), "backups");
 const DB_PATH = path.join(process.cwd(), "prisma", "dev.db");
@@ -46,6 +46,18 @@ export async function pruneOldBackups(): Promise<void> {
       unlink(path.join(BACKUP_DIR, b.filename)).catch(() => {})
     )
   );
+}
+
+export async function restoreFromFile(sourcePath: string): Promise<void> {
+  // Validate SQLite magic bytes
+  const fh = await open(sourcePath, "r");
+  const buf = Buffer.alloc(16);
+  await fh.read(buf, 0, 16, 0);
+  await fh.close();
+  if (buf.slice(0, 15).toString() !== "SQLite format 3") {
+    throw new Error("File bukan database SQLite yang valid");
+  }
+  await copyFile(sourcePath, DB_PATH);
 }
 
 export async function runAutoBackup(): Promise<void> {
