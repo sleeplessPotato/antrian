@@ -1,6 +1,6 @@
 # Antrian BPOM Lubuklinggau
 
-Sistem antrian digital berbasis web untuk BPOM Lubuklinggau. Fitur: kiosk cetak nomor, display board realtime, dashboard petugas, pengumuman suara bilingual (ID + EN).
+Sistem antrian digital berbasis web untuk BPOM Lubuklinggau. Fitur: kiosk cetak nomor antrian, cetak tiket ke printer thermal (Bluetooth/Serial), display board realtime dengan slideshow iklan, dashboard petugas, panel admin dengan manajemen layanan/loket/iklan, dan pengumuman suara bilingual (ID + EN).
 
 ---
 
@@ -116,9 +116,10 @@ NEXT_PUBLIC_APP_NAME="Antrian BPOM Lubuklinggau"
 
 | URL | Fungsi | Pengguna |
 |---|---|---|
-| `/` | Kiosk — ambil nomor antrian | Pengunjung |
-| `/display` | Papan antrian realtime + suara | TV/Monitor publik |
-| `/dashboard` | Panel petugas — panggil & layani | Petugas/Admin |
+| `/` | Kiosk — ambil nomor antrian + cetak tiket | Pengunjung |
+| `/display` | Papan antrian realtime + suara + slideshow iklan | TV/Monitor publik |
+| `/dashboard` | Panel petugas — panggil & layani antrian | Petugas |
+| `/dashboard` (tab Admin) | Kelola petugas, layanan, loket, pengumuman, iklan, pengaturan | Admin |
 | `/kiosk` | Alternatif kiosk tablet | Pengunjung |
 
 ---
@@ -148,6 +149,25 @@ npm run clean        # Hapus folder .next
 
 ---
 
+## Printer Thermal
+
+Tiket dicetak otomatis setelah pengunjung mengisi data. Didukung dua mode:
+
+| Mode | Cara Kerja |
+|---|---|
+| **Serial (ESC/POS)** | Via [Web Serial API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API) — koneksi Bluetooth atau USB ke printer thermal |
+| **Browser print** | Fallback otomatis jika Serial tidak tersedia — buka jendela print browser |
+
+**Setup printer Bluetooth (sekali saja):**
+1. Pasangkan printer ke PC via Bluetooth (Settings → Bluetooth → Add device)
+2. Buka halaman kiosk di browser Chrome/Edge
+3. Pertama kali print → browser meminta izin memilih port → pilih printer
+4. Print selanjutnya langsung tanpa picker
+
+> Web Serial API hanya tersedia di Chrome dan Edge. Firefox tidak didukung.
+
+---
+
 ## Fitur Suara (Display Board)
 
 - Pengumuman bilingual otomatis: **Indonesia lalu Inggris**
@@ -164,12 +184,19 @@ npm run clean        # Hapus folder .next
 .
 ├── app/
 │   ├── api/          # Route API (Next.js App Router)
-│   ├── dashboard/    # Halaman dashboard petugas
-│   ├── display/      # Papan antrian publik
-│   ├── kiosk/        # Halaman kiosk
+│   ├── dashboard/    # Halaman dashboard petugas & admin
+│   ├── display/      # Papan antrian publik + slideshow
+│   ├── kiosk/        # Halaman kiosk tablet
 │   └── page.tsx      # Kiosk utama
-├── components/       # Komponen React (ui/, dashboard/, display/)
-├── lib/              # Utilitas (db, auth, socket, voice, queue-utils)
+├── components/
+│   ├── admin/        # Panel admin (petugas, layanan, loket, iklan, dll)
+│   ├── dashboard/    # Komponen dashboard petugas
+│   ├── display/      # Komponen papan antrian
+│   ├── kiosk/        # Komponen form kiosk
+│   └── ui/           # Komponen shadcn/ui
+├── lib/              # Utilitas (db, auth, socket, voice, printer, queue-utils)
+├── public/
+│   └── ads/          # File iklan yang diupload (jpg/png/pdf)
 ├── prisma/
 │   ├── schema.prisma # Skema database
 │   ├── seed.ts       # Script seed
