@@ -19,6 +19,7 @@ import { ServiceManagement } from "@/components/admin/ServiceManagement";
 import { CounterAdmin } from "@/components/admin/CounterAdmin";
 import { AnnouncementManagement } from "@/components/admin/AnnouncementManagement";
 import { SettingsPanel } from "@/components/admin/SettingsPanel";
+import { AdsManagement } from "@/components/admin/AdsManagement";
 import { formatQueueNumber } from "@/lib/queue-utils";
 
 interface Staff {
@@ -260,12 +261,14 @@ export default function DashboardPage() {
                   <TabsTrigger value="services">Layanan</TabsTrigger>
                   <TabsTrigger value="counters-admin">Loket</TabsTrigger>
                   <TabsTrigger value="announcements">Pengumuman</TabsTrigger>
+                  <TabsTrigger value="ads">Iklan</TabsTrigger>
                   <TabsTrigger value="settings">Pengaturan</TabsTrigger>
                 </TabsList>
                 <TabsContent value="staff"><StaffManagement /></TabsContent>
                 <TabsContent value="services"><ServiceManagement /></TabsContent>
                 <TabsContent value="counters-admin"><CounterAdmin /></TabsContent>
                 <TabsContent value="announcements"><AnnouncementManagement /></TabsContent>
+                <TabsContent value="ads"><AdsManagement /></TabsContent>
                 <TabsContent value="settings"><SettingsPanel /></TabsContent>
               </Tabs>
             </TabsContent>

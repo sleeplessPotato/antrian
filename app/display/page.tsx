@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { getSocket } from "@/lib/socket-client";
 import { announceQueue, unlockAudio, speakTTS, awaitVoices, setPreferredVoice, getPreferredVoiceURI } from "@/lib/voice";
 import { RunningText } from "@/components/display/RunningText";
@@ -29,6 +29,54 @@ interface Announcement {
   id: number;
   text: string;
   textEn: string;
+}
+
+interface Ad {
+  id: number;
+  filename: string;
+  type: string;
+  originalName: string;
+}
+
+function AdSlideshow({ ads }: { ads: Ad[] }) {
+  const [idx, setIdx] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (ads.length <= 1) return;
+    timerRef.current = setInterval(() => setIdx((i) => (i + 1) % ads.length), 6000);
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [ads.length]);
+
+  if (ads.length === 0) return null;
+
+  return (
+    <div className="flex-1 rounded-2xl overflow-hidden bg-black/30 min-h-0">
+      {ads.map((ad, i) => (
+        <div
+          key={ad.id}
+          className={`absolute inset-0 transition-opacity duration-700 ${i === idx ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        >
+          {ad.type === "image" ? (
+            <img src={`/ads/${ad.filename}`} alt={ad.originalName} className="w-full h-full object-contain" />
+          ) : (
+            <iframe src={`/ads/${ad.filename}`} className="w-full h-full border-0" title={ad.originalName} />
+          )}
+        </div>
+      ))}
+      {ads.length > 1 && (
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+          {ads.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setIdx(i)}
+              className={`w-2 h-2 rounded-full transition-all ${i === idx ? "bg-white" : "bg-white/40"}`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 /* ─── Card: dipanggil (kuning) ─── */
@@ -94,6 +142,7 @@ export default function DisplayPage() {
     called: [], serving: [], waiting: [], recentDone: [], totalWaiting: 0, totalServed: 0,
   });
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [ads, setAds] = useState<Ad[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [voiceType, setVoiceType] = useState<"tts" | "audio" | "both">("tts");
   const [locale] = useState<"id" | "en">("id");
@@ -120,14 +169,16 @@ export default function DisplayPage() {
   };
 
   const fetchData = useCallback(async () => {
-    const [dataRes, annRes, settingsRes] = await Promise.all([
+    const [dataRes, annRes, settingsRes, adsRes] = await Promise.all([
       fetch("/api/queue/current"),
       fetch("/api/announcements"),
       fetch("/api/settings"),
+      fetch("/api/ads"),
     ]);
-    const [d, a, s] = await Promise.all([dataRes.json(), annRes.json(), settingsRes.json()]);
+    const [d, a, s, adList] = await Promise.all([dataRes.json(), annRes.json(), settingsRes.json(), adsRes.json()]);
     setData(d);
     setAnnouncements(a);
+    setAds(adList);
     if (s.voice_type) setVoiceType(s.voice_type);
   }, []);
 
@@ -254,7 +305,7 @@ export default function DisplayPage() {
           )}
         </div>
 
-        {/* RIGHT: Berikutnya + Stats + Waiting list */}
+        {/* RIGHT: Berikutnya + Stats + Waiting list + Slideshow */}
         <div className="flex flex-col gap-4">
 
           <div>
@@ -286,10 +337,10 @@ export default function DisplayPage() {
           </div>
 
           {data.waiting.slice(1).length > 0 && (
-            <div className="bg-white/10 rounded-xl p-4 flex-1">
+            <div className="bg-white/10 rounded-xl p-4">
               <p className="text-blue-200 text-xs uppercase tracking-widest mb-3">Antrian Menunggu</p>
               <div className="space-y-2">
-                {data.waiting.slice(1, 6).map((q) => (
+                {data.waiting.slice(1, 4).map((q) => (
                   <div key={q.id} className="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2">
                     <span className="font-bold text-white">{q.formattedNumber}</span>
                     <span className="text-blue-200 text-xs truncate ml-2">{q.service?.name}</span>
@@ -297,6 +348,13 @@ export default function DisplayPage() {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Slideshow iklan */}
+          {ads.length > 0 && (
+            <div className="relative flex-1 min-h-40">
+              <AdSlideshow ads={ads} />
             </div>
           )}
         </div>
