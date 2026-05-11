@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "outDir": ".server",
+    "target": "ES2020"
+  },
+  "include": ["server.ts", "lib/generated/prisma/**/*"]
+}

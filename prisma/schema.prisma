@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Queue {
+  id          Int       @id @default(autoincrement())
+  number      Int
+  prefix      String    @default("")
+  queueType   String    @default("single") // "single" | "multi" | "disability"
+  counterId   Int?
+  counter     Counter?  @relation(fields: [counterId], references: [id])
+  status      String    @default("waiting") // "waiting" | "called" | "serving" | "done" | "skipped"
+  visitorName String
+  nik         String
+  phone       String
+  serviceId   Int
+  service     Service   @relation(fields: [serviceId], references: [id])
+  date        String
+  callCount   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  calledAt    DateTime?
+  servedAt    DateTime?
+  doneAt      DateTime?
+}
+
+model Service {
+  id       Int     @id @default(autoincrement())
+  name     String
+  nameEn   String
+  code     String  @unique
+  prefix   String  @default("A")
+  isActive Boolean @default(true)
+  order    Int     @default(0)
+  queues   Queue[]
+}
+
+model Counter {
+  id      Int     @id @default(autoincrement())
+  name    String
+  code    String  @unique
+  isOpen  Boolean @default(false)
+  staffId Int?
+  staff   Staff?  @relation(fields: [staffId], references: [id])
+  queues  Queue[]
+}
+
+model Staff {
+  id       Int       @id @default(autoincrement())
+  name     String
+  username String    @unique
+  password String
+  role     String    @default("staff") // "admin" | "staff"
+  counters Counter[]
+  sessions Session[]
+}
+
+model Session {
+  id        String   @id
+  staffId   Int
+  staff     Staff    @relation(fields: [staffId], references: [id])
+  expiresAt DateTime
+}
+
+model Announcement {
+  id       Int     @id @default(autoincrement())
+  text     String
+  textEn   String
+  isActive Boolean @default(true)
+  order    Int     @default(0)
+}
+
+model Setting {
+  key   String @id
+  value String
+}
