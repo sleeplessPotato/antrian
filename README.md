@@ -58,21 +58,32 @@ Script ini otomatis menjalankan:
 2. Buat `.env` dari `.env.example`
 3. `npm run db:migrate` — buat database & terapkan skema
 4. `npm run db:seed` — isi data awal (layanan, loket, akun)
+5. Port forwarding 80 → 3000 (butuh Administrator/sudo)
 
-### 3. Jalankan server
+> **Windows:** klik kanan PowerShell → *Run as Administrator*, lalu jalankan `.\setup.ps1`
 
-**Development:**
-```bash
-npm run dev
-```
+### 3. Rename PC server (sekali saja)
 
-**Production:**
+Agar petugas bisa akses tanpa hafal IP:
+
+1. Klik kanan **This PC → Properties → Rename this PC**
+2. Ganti nama menjadi `antrian`
+3. Restart PC
+
+### 4. Jalankan server
+
 ```bash
 npm run build
 npm start
 ```
 
-Server berjalan di `http://localhost:3000`
+Akses dari semua perangkat di jaringan yang sama:
+
+| URL | Halaman |
+|---|---|
+| `http://antrian/` | Kiosk |
+| `http://antrian/display` | Display TV |
+| `http://antrian/dashboard` | Petugas |
 
 ---
 
