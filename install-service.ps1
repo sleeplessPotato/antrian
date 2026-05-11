@@ -89,7 +89,7 @@ Start-Sleep -Seconds 4
 $svc = Get-Service $serviceName -ErrorAction SilentlyContinue
 Write-Host ""
 if ($svc -and $svc.Status -eq "Running") {
-    Write-Host "✓ Berhasil! Aplikasi berjalan dan akan otomatis start saat PC menyala." -ForegroundColor Green
+    Write-Host "[OK] Berhasil! Aplikasi berjalan dan akan otomatis start saat PC menyala." -ForegroundColor Green
 } else {
     Write-Host "Service terinstall. Status: $($svc.Status). Cek logs jika ada masalah." -ForegroundColor Yellow
     Write-Host "  Log: $logsDir" -ForegroundColor Yellow
@@ -97,9 +97,9 @@ if ($svc -and $svc.Status -eq "Running") {
 
 Write-Host ""
 Write-Host "Perintah berguna (jalankan sebagai Admin):" -ForegroundColor Cyan
-Write-Host "  .\uninstall-service.ps1       — hapus service"
-Write-Host "  nssm restart $serviceName     — restart aplikasi"
-Write-Host "  nssm stop    $serviceName     — matikan aplikasi"
-Write-Host "  nssm start   $serviceName     — nyalakan aplikasi"
+Write-Host "  .\uninstall-service.ps1       - hapus service"
+Write-Host "  nssm restart $serviceName     - restart aplikasi"
+Write-Host "  nssm stop    $serviceName     - matikan aplikasi"
+Write-Host "  nssm start   $serviceName     - nyalakan aplikasi"
 Write-Host ""
 pause
