@@ -37,55 +37,29 @@ Sistem antrian digital berbasis web untuk BPOM Lubuklinggau. Fitur: kiosk cetak 
 ### 1. Clone repository
 
 ```bash
-git clone <url-repo> antrian-bpom
+git clone https://github.com/sleeplessPotato/antrian antrian-bpom
 cd antrian-bpom
 ```
 
-### 2. Install dependensi
+### 2. Jalankan setup script (satu perintah)
 
+**Windows (PowerShell):**
+```powershell
+.\setup.ps1
+```
+
+**Linux / Mac:**
 ```bash
-npm install
+chmod +x setup.sh && ./setup.sh
 ```
 
-### 3. Buat file `.env`
+Script ini otomatis menjalankan:
+1. `npm install` — install semua dependensi
+2. Buat `.env` dari `.env.example`
+3. `npm run db:migrate` — buat database & terapkan skema
+4. `npm run db:seed` — isi data awal (layanan, loket, akun)
 
-Salin dari contoh lalu sesuaikan jika perlu:
-
-```bash
-cp .env.example .env
-```
-
-Isi default `.env`:
-
-```env
-DATABASE_URL="file:./prisma/dev.db"
-JWT_SECRET="antrian-bpom-lubuklinggau-secret-2024"
-NEXT_PUBLIC_APP_NAME="Antrian BPOM Lubuklinggau"
-```
-
-> Ganti `JWT_SECRET` dengan string acak yang kuat sebelum deploy ke produksi.
-
-### 4. Jalankan migrasi database
-
-```bash
-npm run db:migrate
-```
-
-Perintah ini membuat file `prisma/dev.db` dan menerapkan semua skema tabel.
-
-### 5. Seed data awal
-
-```bash
-npm run db:seed
-```
-
-Akan membuat:
-- 5 layanan (Konsultasi Produk, Pengambilan Dokumen, dll.)
-- 3 loket (Loket 1–3)
-- Akun admin dan petugas
-- Pengumuman default
-
-### 6. Jalankan server
+### 3. Jalankan server
 
 **Development:**
 ```bash
@@ -99,6 +73,31 @@ npm start
 ```
 
 Server berjalan di `http://localhost:3000`
+
+---
+
+### Setup manual (opsional)
+
+Jika ingin menjalankan langkah per langkah:
+
+```bash
+npm install
+cp .env.example .env          # Linux/Mac
+# copy .env.example .env      # Windows CMD
+npm run db:migrate
+npm run db:seed
+npm run dev
+```
+
+Isi default `.env`:
+
+```env
+DATABASE_URL="file:./prisma/dev.db"
+JWT_SECRET="ganti-dengan-string-acak-yang-kuat"
+NEXT_PUBLIC_APP_NAME="Antrian BPOM Lubuklinggau"
+```
+
+> Ganti `JWT_SECRET` dengan string acak yang kuat sebelum deploy ke produksi.
 
 ---
 
