@@ -51,7 +51,7 @@ function AdSlideshow({ ads }: { ads: Ad[] }) {
   if (ads.length === 0) return null;
 
   return (
-    <div className="flex-1 rounded-2xl overflow-hidden bg-black/30 min-h-0">
+    <div className="absolute inset-0 rounded-2xl overflow-hidden bg-black/30">
       {ads.map((ad, i) => (
         <div
           key={ad.id}
@@ -82,18 +82,20 @@ function AdSlideshow({ ads }: { ads: Ad[] }) {
 /* ─── Card: dipanggil (kuning) ─── */
 function CalledCard({ item }: { item: QueueItem }) {
   return (
-    <div className="bg-white rounded-2xl shadow-xl flex flex-col items-center justify-center p-6 min-h-44 border-4 border-yellow-400">
+    <div className="bg-white rounded-2xl shadow-xl flex flex-col items-center justify-center p-4 min-h-36 border-4 border-yellow-400">
       <p className="text-gray-400 text-xs font-semibold uppercase tracking-widest mb-1">
         {item.counter?.name ?? "Loket"}
       </p>
-      <p className="text-7xl font-black text-blue-700 leading-none">{item.formattedNumber}</p>
-      <p className="text-gray-500 text-sm mt-2">{item.service?.name}</p>
-      {item.queueType === "disability" && (
-        <span className="mt-2 bg-purple-600 text-white text-xs px-3 py-1 rounded-full">♿ Prioritas</span>
-      )}
-      <span className="mt-2 bg-yellow-100 text-yellow-700 text-xs px-3 py-1 rounded-full font-semibold">
-        🔔 Dipanggil
-      </span>
+      <p className="text-6xl font-black text-blue-700 leading-none">{item.formattedNumber}</p>
+      <p className="text-gray-500 text-xs mt-1.5">{item.service?.name}</p>
+      <div className="flex items-center gap-1.5 mt-2 flex-wrap justify-center">
+        {item.queueType === "disability" && (
+          <span className="bg-purple-600 text-white text-xs px-2 py-0.5 rounded-full">♿ Prioritas</span>
+        )}
+        <span className="bg-yellow-100 text-yellow-700 text-xs px-2 py-0.5 rounded-full font-semibold">
+          🔔 Dipanggil
+        </span>
+      </div>
     </div>
   );
 }
@@ -101,38 +103,29 @@ function CalledCard({ item }: { item: QueueItem }) {
 /* ─── Card: dilayani (hijau) ─── */
 function ServingCard({ item }: { item: QueueItem }) {
   return (
-    <div className="bg-white rounded-2xl shadow-xl flex flex-col items-center justify-center p-6 min-h-44 border-4 border-green-400">
+    <div className="bg-white rounded-2xl shadow-xl flex flex-col items-center justify-center p-4 min-h-36 border-4 border-green-400">
       <p className="text-gray-400 text-xs font-semibold uppercase tracking-widest mb-1">
         {item.counter?.name ?? "Loket"}
       </p>
-      <p className="text-7xl font-black text-green-700 leading-none">{item.formattedNumber}</p>
-      <p className="text-gray-500 text-sm mt-2">{item.service?.name}</p>
-      {item.queueType === "disability" && (
-        <span className="mt-2 bg-purple-600 text-white text-xs px-3 py-1 rounded-full">♿ Prioritas</span>
-      )}
-      <span className="mt-2 bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-semibold">
-        ✋ Sedang Dilayani
-      </span>
+      <p className="text-6xl font-black text-green-700 leading-none">{item.formattedNumber}</p>
+      <p className="text-gray-500 text-xs mt-1.5">{item.service?.name}</p>
+      <div className="flex items-center gap-1.5 mt-2 flex-wrap justify-center">
+        {item.queueType === "disability" && (
+          <span className="bg-purple-600 text-white text-xs px-2 py-0.5 rounded-full">♿ Prioritas</span>
+        )}
+        <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-semibold">
+          ✋ Sedang Dilayani
+        </span>
+      </div>
     </div>
   );
 }
 
 function EmptySlot({ label }: { label: string }) {
   return (
-    <div className="bg-white/10 rounded-2xl flex flex-col items-center justify-center min-h-44 border-2 border-white/20">
+    <div className="bg-white/10 rounded-2xl flex flex-col items-center justify-center min-h-36 border-2 border-white/20">
       <p className="text-white/30 text-2xl">—</p>
       <p className="text-white/20 text-sm mt-1">{label}</p>
-    </div>
-  );
-}
-
-function DoneRow({ item }: { item: QueueItem }) {
-  return (
-    <div className="flex items-center justify-between bg-white/10 rounded-xl px-4 py-3">
-      <span className="font-black text-white/60 text-xl w-20">{item.formattedNumber}</span>
-      <span className="text-white/50 text-sm flex-1 ml-3 truncate">{item.service?.name}</span>
-      <span className="text-white/40 text-sm">{item.counter?.name ?? "-"}</span>
-      <span className="ml-3 text-green-400/70 text-xs">✓ Selesai</span>
     </div>
   );
 }
@@ -259,14 +252,14 @@ export default function DisplayPage() {
       <RunningText announcements={announcements} locale={locale} />
 
       {/* Main layout */}
-      <main className="flex-1 grid grid-cols-3 gap-6 p-6 min-h-0">
+      <main className="flex-1 grid grid-cols-3 gap-5 px-6 pb-4 min-h-0">
 
-        {/* LEFT: Dipanggil + Dilayani + Selesai */}
-        <div className="col-span-2 flex flex-col gap-5">
+        {/* LEFT: Dipanggil + Dilayani + Daftar Menunggu */}
+        <div className="col-span-2 flex flex-col gap-4 min-h-0">
 
-          {/* Section: Dipanggil */}
-          <div>
-            <h2 className="text-sm font-bold text-yellow-300 uppercase tracking-widest mb-3">
+          {/* Dipanggil */}
+          <div className="shrink-0">
+            <h2 className="text-xs font-bold text-yellow-300 uppercase tracking-widest mb-2">
               🔔 Dipanggil
             </h2>
             {data.called.length > 0 ? (
@@ -278,10 +271,10 @@ export default function DisplayPage() {
             )}
           </div>
 
-          {/* Section: Sedang Dilayani */}
+          {/* Sedang Dilayani */}
           {data.serving.length > 0 && (
-            <div>
-              <h2 className="text-sm font-bold text-green-300 uppercase tracking-widest mb-3">
+            <div className="shrink-0">
+              <h2 className="text-xs font-bold text-green-300 uppercase tracking-widest mb-2">
                 ✋ Sedang Dilayani
               </h2>
               <div className={`grid gap-3 ${data.serving.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
@@ -290,74 +283,84 @@ export default function DisplayPage() {
             </div>
           )}
 
-          {/* Section: Selesai */}
-          {data.recentDone.length > 0 && (
-            <div className="mt-auto">
-              <h2 className="text-sm font-bold text-white/40 uppercase tracking-widest mb-2">
-                ✓ Terakhir Selesai
-              </h2>
-              <div className="space-y-2">
-                {data.recentDone.slice(0, 4).map((q) => (
-                  <DoneRow key={q.id} item={q} />
-                ))}
-              </div>
+          {/* Daftar Menunggu — flex-1 mengisi sisa ruang */}
+          <div className="flex-1 min-h-0 flex flex-col">
+            <h2 className="text-xs font-bold text-blue-200 uppercase tracking-widest mb-2 shrink-0">
+              ⏳ Daftar Menunggu
+              {data.waiting.length > 0 && (
+                <span className="ml-2 text-blue-300 normal-case font-normal">({data.waiting.length})</span>
+              )}
+            </h2>
+            <div className="flex-1 min-h-0 overflow-hidden bg-white/5 rounded-2xl p-3">
+              {data.waiting.length > 0 ? (
+                <div className="grid grid-cols-2 gap-2 h-full content-start overflow-y-auto">
+                  {data.waiting.slice(0, 12).map((q, i) => (
+                    <div
+                      key={q.id}
+                      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 ${
+                        i === 0 ? "bg-blue-500/30 border border-blue-400/40" : "bg-white/5"
+                      }`}
+                    >
+                      <span className="font-black text-white text-lg w-16 shrink-0">{q.formattedNumber}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-blue-100 text-xs truncate">{q.service?.name}</p>
+                        {q.queueType === "disability" && (
+                          <span className="text-purple-300 text-xs">♿ Prioritas</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="h-full flex items-center justify-center">
+                  <p className="text-white/20 text-sm">Tidak ada antrian menunggu</p>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
 
         {/* RIGHT: Berikutnya + Stats + Slideshow */}
-        <div className="flex flex-col gap-4 min-h-0">
+        <div className="flex flex-col gap-3 min-h-0">
 
-          <div>
-            <h2 className="text-sm font-bold text-blue-200 uppercase tracking-widest mb-3">
+          {/* Berikutnya — compact */}
+          <div className="shrink-0">
+            <h2 className="text-xs font-bold text-blue-200 uppercase tracking-widest mb-2">
               ⏭ Berikutnya
             </h2>
             {nextQueue ? (
-              <div className="bg-white rounded-2xl p-6 text-center shadow-lg">
-                <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Nomor Berikutnya</p>
-                <p className="text-5xl font-black text-blue-600">{nextQueue.formattedNumber}</p>
-                <p className="text-gray-400 text-sm mt-2">{nextQueue.service?.name}</p>
+              <div className="bg-white rounded-2xl p-4 text-center shadow-lg">
+                <p className="text-gray-400 text-xs uppercase tracking-wide mb-0.5">Nomor Berikutnya</p>
+                <p className="text-4xl font-black text-blue-600 leading-tight">{nextQueue.formattedNumber}</p>
+                <p className="text-gray-400 text-xs mt-1 truncate">{nextQueue.service?.name}</p>
               </div>
             ) : (
-              <div className="bg-white/10 rounded-2xl p-6 text-center">
+              <div className="bg-white/10 rounded-2xl p-4 text-center">
                 <p className="text-white/30">—</p>
               </div>
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-white/10 rounded-xl p-4 text-center">
-              <p className="text-yellow-300 text-xs uppercase tracking-wide mb-1">Menunggu</p>
-              <p className="text-4xl font-black text-yellow-400">{data.totalWaiting}</p>
+          {/* Stats — compact */}
+          <div className="grid grid-cols-2 gap-2 shrink-0">
+            <div className="bg-white/10 rounded-xl p-3 text-center">
+              <p className="text-yellow-300 text-xs uppercase tracking-wide mb-0.5">Menunggu</p>
+              <p className="text-3xl font-black text-yellow-400">{data.totalWaiting}</p>
             </div>
-            <div className="bg-white/10 rounded-xl p-4 text-center">
-              <p className="text-green-300 text-xs uppercase tracking-wide mb-1">Dilayani</p>
-              <p className="text-4xl font-black text-green-400">{data.totalServed}</p>
+            <div className="bg-white/10 rounded-xl p-3 text-center">
+              <p className="text-green-300 text-xs uppercase tracking-wide mb-0.5">Dilayani</p>
+              <p className="text-3xl font-black text-green-400">{data.totalServed}</p>
             </div>
           </div>
 
-          {/* Slideshow iklan — flex-1 mengisi sisa ruang */}
+          {/* Slideshow — flex-1 mengisi sisa ruang */}
           <div className="relative flex-1 min-h-0">
-            {ads.length > 0
-              ? <AdSlideshow ads={ads} />
-              : (
-                <div className="h-full bg-white/5 rounded-2xl flex flex-col items-center justify-center gap-2">
-                  <p className="text-blue-200 text-xs uppercase tracking-widest mb-2">Antrian Menunggu</p>
-                  <div className="w-full space-y-2 px-2">
-                    {data.waiting.slice(1, 6).map((q) => (
-                      <div key={q.id} className="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2">
-                        <span className="font-bold text-white">{q.formattedNumber}</span>
-                        <span className="text-blue-200 text-xs truncate ml-2">{q.service?.name}</span>
-                        {q.queueType === "disability" && <span className="text-purple-300 ml-1 text-xs">♿</span>}
-                      </div>
-                    ))}
-                    {data.waiting.slice(1).length === 0 && (
-                      <p className="text-white/20 text-center text-sm py-4">—</p>
-                    )}
-                  </div>
-                </div>
-              )
-            }
+            <AdSlideshow ads={ads} />
+            {ads.length === 0 && (
+              <div className="h-full bg-white/5 rounded-2xl flex items-center justify-center">
+                <p className="text-white/20 text-sm">—</p>
+              </div>
+            )}
           </div>
         </div>
       </main>
