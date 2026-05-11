@@ -14,6 +14,11 @@ import { QueueControl } from "@/components/dashboard/QueueControl";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { ReportsPanel } from "@/components/dashboard/ReportsPanel";
 import { CounterManagement } from "@/components/dashboard/CounterManagement";
+import { StaffManagement } from "@/components/admin/StaffManagement";
+import { ServiceManagement } from "@/components/admin/ServiceManagement";
+import { CounterAdmin } from "@/components/admin/CounterAdmin";
+import { AnnouncementManagement } from "@/components/admin/AnnouncementManagement";
+import { SettingsPanel } from "@/components/admin/SettingsPanel";
 import { formatQueueNumber } from "@/lib/queue-utils";
 
 interface Staff {
@@ -139,6 +144,7 @@ export default function DashboardPage() {
         <div className="flex items-center gap-3">
           <span className="text-sm text-gray-600">👤 {staff?.name}</span>
 
+          {staff?.role === "admin" && (
           <AlertDialog>
             <AlertDialogTrigger className="inline-flex items-center justify-center rounded-md border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">
               🔄 Reset Antrian
@@ -158,6 +164,7 @@ export default function DashboardPage() {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+          )}
 
           <Button variant="outline" size="sm" onClick={handleLogout}>
             Keluar
@@ -182,6 +189,9 @@ export default function DashboardPage() {
             </TabsTrigger>
             <TabsTrigger value="counters">Kelola Loket</TabsTrigger>
             <TabsTrigger value="reports">Laporan</TabsTrigger>
+            {staff?.role === "admin" && (
+              <TabsTrigger value="admin">⚙️ Admin</TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="queue" className="mt-4 space-y-4">
@@ -241,6 +251,25 @@ export default function DashboardPage() {
           <TabsContent value="reports" className="mt-4">
             <ReportsPanel />
           </TabsContent>
+
+          {staff?.role === "admin" && (
+            <TabsContent value="admin" className="mt-4">
+              <Tabs defaultValue="staff">
+                <TabsList className="mb-4">
+                  <TabsTrigger value="staff">Petugas</TabsTrigger>
+                  <TabsTrigger value="services">Layanan</TabsTrigger>
+                  <TabsTrigger value="counters-admin">Loket</TabsTrigger>
+                  <TabsTrigger value="announcements">Pengumuman</TabsTrigger>
+                  <TabsTrigger value="settings">Pengaturan</TabsTrigger>
+                </TabsList>
+                <TabsContent value="staff"><StaffManagement /></TabsContent>
+                <TabsContent value="services"><ServiceManagement /></TabsContent>
+                <TabsContent value="counters-admin"><CounterAdmin /></TabsContent>
+                <TabsContent value="announcements"><AnnouncementManagement /></TabsContent>
+                <TabsContent value="settings"><SettingsPanel /></TabsContent>
+              </Tabs>
+            </TabsContent>
+          )}
         </Tabs>
       </main>
     </div>
