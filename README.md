@@ -70,10 +70,26 @@ Agar petugas bisa akses tanpa hafal IP:
 2. Ganti nama menjadi `antrian`
 3. Restart PC
 
-### 4. Jalankan server
+### 4. Build aplikasi
 
 ```bash
 npm run build
+```
+
+### 5. Jalankan otomatis saat PC menyala (Windows Service)
+
+```powershell
+# Klik kanan PowerShell → Run as administrator
+.\install-service.ps1
+```
+
+Script ini mengunduh NSSM, mendaftarkan aplikasi sebagai Windows Service, dan langsung menjalankannya. Setelah ini, aplikasi hidup otomatis setiap kali PC menyala — tanpa perlu login atau ketik perintah apapun.
+
+> Untuk menghapus service: `.\uninstall-service.ps1` (sebagai Administrator)
+
+### Atau: jalankan manual (development / testing)
+
+```bash
 npm start
 ```
 
@@ -215,6 +231,8 @@ Database dicadangkan secara otomatis dan dapat dipulihkan melalui panel admin (t
 ├── public/
 │   └── ads/          # File iklan yang diupload (jpg/png/pdf) — gitignored
 ├── backups/          # File backup database otomatis (.db) — gitignored
+├── logs/             # Log output service Windows — gitignored
+├── tools/            # NSSM binary (diunduh otomatis) — gitignored
 ├── scripts/          # Script utilitas (test-backup.ts, test-restore.ts)
 ├── prisma/
 │   ├── schema.prisma # Skema database
