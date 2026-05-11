@@ -34,7 +34,10 @@ export function AdsManagement() {
     form.append("file", file);
     const res = await fetch("/api/ads", { method: "POST", body: form });
     if (res.ok) { fetch_(); }
-    else { const d = await res.json(); setError(d.error ?? "Gagal upload"); }
+    else {
+      try { const d = await res.json(); setError(d.error ?? "Gagal upload"); }
+      catch { setError(`Gagal upload (${res.status})`); }
+    }
     setUploading(false);
     if (inputRef.current) inputRef.current.value = "";
   };
