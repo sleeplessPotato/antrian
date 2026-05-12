@@ -161,25 +161,41 @@ export default function DisplayPage() {
     if (v) speakTTS("Nomor antrian A satu, silakan menuju Loket satu.", v.lang);
   };
 
+  const fetchContent = useCallback(async () => {
+    try {
+      const [annRes, adsRes] = await Promise.all([
+        fetch("/api/announcements"),
+        fetch("/api/ads"),
+      ]);
+      if (annRes.ok) setAnnouncements(await annRes.json());
+      if (adsRes.ok) setAds(await adsRes.json());
+    } catch { /* silent — retry on next poll */ }
+  }, []);
+
   const fetchData = useCallback(async () => {
-    const [dataRes, annRes, settingsRes, adsRes] = await Promise.all([
-      fetch("/api/queue/current"),
-      fetch("/api/announcements"),
-      fetch("/api/settings"),
-      fetch("/api/ads"),
-    ]);
-    const [d, a, s, adList] = await Promise.all([dataRes.json(), annRes.json(), settingsRes.json(), adsRes.json()]);
-    setData(d);
-    setAnnouncements(a);
-    setAds(adList);
-    if (s.voice_type) setVoiceType(s.voice_type);
+    try {
+      const [dataRes, annRes, settingsRes, adsRes] = await Promise.all([
+        fetch("/api/queue/current"),
+        fetch("/api/announcements"),
+        fetch("/api/settings"),
+        fetch("/api/ads"),
+      ]);
+      if (dataRes.ok)    setData(await dataRes.json());
+      if (annRes.ok)     setAnnouncements(await annRes.json());
+      if (adsRes.ok)     setAds(await adsRes.json());
+      if (settingsRes.ok) {
+        const s = await settingsRes.json();
+        if (s.voice_type) setVoiceType(s.voice_type);
+      }
+    } catch { /* silent */ }
   }, []);
 
   useEffect(() => {
     fetchData();
-    const t = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(t);
-  }, [fetchData]);
+    const clock = setInterval(() => setCurrentTime(new Date()), 1000);
+    const contentPoll = setInterval(fetchContent, 60_000);
+    return () => { clearInterval(clock); clearInterval(contentPoll); };
+  }, [fetchData, fetchContent]);
 
   useEffect(() => {
     const socket = getSocket();
@@ -214,6 +230,7 @@ export default function DisplayPage() {
     socket.on("queue:requeued", fetchData);
     socket.on("queue:reset",    fetchData);
     socket.on("queue:new",      fetchData);
+    socket.on("content:updated", fetchContent);
 
     return () => {
       socket.off("queue:called");
@@ -224,8 +241,9 @@ export default function DisplayPage() {
       socket.off("queue:requeued");
       socket.off("queue:reset");
       socket.off("queue:new");
+      socket.off("content:updated");
     };
-  }, [voiceType, locale, fetchData]);
+  }, [voiceType, locale, fetchData, fetchContent]);
 
   const nextQueue = data.waiting[0] ?? null;
 
