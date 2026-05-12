@@ -26,7 +26,7 @@ export function AnnouncementManagement() {
   const [loading, setLoading] = useState(false);
 
   const fetch_ = useCallback(async () => {
-    const res = await fetch("/api/announcements");
+    const res = await fetch("/api/announcements?all=true");
     if (res.ok) setList(await res.json());
   }, []);
 

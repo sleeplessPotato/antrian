@@ -4,6 +4,10 @@ import { getSession } from "@/lib/auth";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 
+function emitContentUpdated() {
+  (global as any).io?.to("display").emit("content:updated");
+}
+
 export async function GET(req: NextRequest) {
   const all = new URL(req.url).searchParams.get("all") === "true";
   const ads = await db.advertisement.findMany({
@@ -51,6 +55,7 @@ export async function POST(req: NextRequest) {
         order: (last?.order ?? 0) + 1,
       },
     });
+    emitContentUpdated();
     return NextResponse.json(ad, { status: 201 });
   } catch (err) {
     console.error("[POST /api/ads]", err);
